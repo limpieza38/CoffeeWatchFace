@@ -1,44 +1,63 @@
 package com.coffee.moc.firebaseMessagingService;
 
+import android.content.Intent;
 import android.util.Log;
 
+import com.coffee.moc.Model.CoffeeDataMessage;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
-import static android.content.ContentValues.TAG;
+import java.util.Map;
+
 
 public class CoffeeFirebaseMessagingService extends FirebaseMessagingService {
+    private static final String TAG = "CoffeeFirebaseMessagingService";
+    public static final String NOTIFICATION = "com.coffee.moc.firebaseMessagingService";
+    public static final String TYPE = "type";
+    public static final String TIMESTEMP = "timestemp";
+    public static final String FILLLEVEL = "fillLevel";
     @Override
     public void onNewToken(String token) {
-
         Log.d(TAG, "Refreshed token: " + token);
     }
 
+
+
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
-        // ...
-
-        // TODO(developer): Handle FCM messages here.
-        // Not getting messages here? See why this may be: https://goo.gl/39bRNJ
         Log.d(TAG, "firebase From: " + remoteMessage.getFrom());
 
         // Check if message contains a data payload.
-       if (remoteMessage.getData().size() > 0) {
+        if (remoteMessage.getData().size() > 0) {
             Log.d(TAG, "firebase Message data payload: " + remoteMessage.getData());
 
-        /*    if ( true) {
-                // For long-running tasks (10 seconds or more) use Firebase Job Dispatcher.
-                scheduleJob();
-            } else {
-                // Handle message within 10 seconds
-                handleNow();
-            } */
+            Map<String, String> data = remoteMessage.getData();
+
+            // Handle message within 10 seconds
+            handleRemoteDataMessage(data);
 
         }
 
         // Check if message contains a notification payload.
-        if (remoteMessage.getNotification() != null) {
+        if (remoteMessage.getNotification() != null)
+
+        {
             Log.d(TAG, "firebase Message Notification Body: " + remoteMessage.getNotification().getBody());
         }
+
+    }
+
+    private void handleRemoteDataMessage(Map<String, String> data) {
+        Intent intent = new Intent(NOTIFICATION);
+        if(data.containsKey(TYPE)){
+            intent.putExtra(TYPE, data.get(TYPE));
+        }
+        if(data.containsKey(TIMESTEMP)){
+            intent.putExtra(TIMESTEMP, data.get(TIMESTEMP));
+        }
+        if(data.containsKey(FILLLEVEL)){
+            intent.putExtra(FILLLEVEL, data.get(FILLLEVEL));
+        }
+        sendBroadcast(intent);
     }
 }

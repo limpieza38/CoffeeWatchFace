@@ -23,6 +23,10 @@ import android.util.Log;
 import android.view.SurfaceHolder;
 import android.widget.Toast;
 
+import com.coffee.moc.Model.CoffeeDataMessage;
+import com.coffee.moc.firebaseMessagingService.CoffeeFirebaseMessagingService;
+import com.google.android.gms.common.logging.Logger;
+
 import java.lang.ref.WeakReference;
 import java.util.Calendar;
 import java.util.TimeZone;
@@ -96,6 +100,19 @@ public class CoffeeWatchFace extends CanvasWatchFaceService {
             public void onReceive(Context context, Intent intent) {
                 mCalendar.setTimeZone(TimeZone.getDefault());
                 invalidate();
+            }
+        };
+        private CoffeeDataMessage coffeeDataMessage;
+        private final BroadcastReceiver coffeeMessagesReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                Bundle bundle = intent.getExtras();
+                if (bundle != null) {
+                    String type = bundle.getString(CoffeeFirebaseMessagingService.TYPE);
+                    String timestemp = bundle.getString(CoffeeFirebaseMessagingService.TIMESTEMP);
+                    String fillLevel = bundle.getString(CoffeeFirebaseMessagingService.FILLLEVEL);
+                    coffeeDataMessage = new CoffeeDataMessage(type, timestemp, fillLevel);
+                }
             }
         };
         private boolean mRegisteredTimeZoneReceiver = false;
@@ -398,10 +415,21 @@ public class CoffeeWatchFace extends CanvasWatchFaceService {
             final float hourHandOffset = mCalendar.get(Calendar.MINUTE) / 2f;
             final float hoursRotation = (mCalendar.get(Calendar.HOUR) * 30) + hourHandOffset;
 
-            /*
-             * Save the canvas state before we can begin to rotate it.
-             */
-            canvas.save();
+
+            if (coffeeDataMessage != null){
+                Paint paint = new Paint();
+                paint.setColor(Color.WHITE);
+                paint.setStyle(Paint.Style.FILL);
+                canvas.drawPaint(paint);
+
+                paint.setColor(Color.BLACK);
+                paint.setTextSize(20);
+                canvas.drawText(coffeeDataMessage.getType(), 10, 10, paint);
+            }
+                /*
+                 * Save the canvas state before we can begin to rotate it.
+                 */
+                canvas.save();
 
             canvas.rotate(hoursRotation, mCenterX, mCenterY);
             canvas.drawLine(
@@ -466,7 +494,11 @@ public class CoffeeWatchFace extends CanvasWatchFaceService {
             }
             mRegisteredTimeZoneReceiver = true;
             IntentFilter filter = new IntentFilter(Intent.ACTION_TIMEZONE_CHANGED);
+
             CoffeeWatchFace.this.registerReceiver(mTimeZoneReceiver, filter);
+
+            IntentFilter coffeeFilter = new IntentFilter(CoffeeFirebaseMessagingService.NOTIFICATION);
+            CoffeeWatchFace.this.registerReceiver(coffeeMessagesReceiver, coffeeFilter);
         }
 
         private void unregisterReceiver() {
@@ -475,6 +507,7 @@ public class CoffeeWatchFace extends CanvasWatchFaceService {
             }
             mRegisteredTimeZoneReceiver = false;
             CoffeeWatchFace.this.unregisterReceiver(mTimeZoneReceiver);
+            CoffeeWatchFace.this.unregisterReceiver(coffeeMessagesReceiver);
         }
 
         /**
