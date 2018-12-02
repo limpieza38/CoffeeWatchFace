@@ -8,31 +8,24 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.ColorMatrix;
-import android.graphics.ColorMatrixColorFilter;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.support.v7.graphics.Palette;
 import android.support.wearable.watchface.CanvasWatchFaceService;
 import android.support.wearable.watchface.WatchFaceService;
 import android.support.wearable.watchface.WatchFaceStyle;
-import android.util.Log;
 import android.view.SurfaceHolder;
 import android.widget.Toast;
 
 import com.coffee.moc.Model.CoffeeDataMessage;
 import com.coffee.moc.firebaseMessagingService.CoffeeFirebaseMessagingService;
-import com.google.android.gms.common.logging.Logger;
 
 import java.lang.ref.WeakReference;
 import java.util.Calendar;
 import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
-
-import static android.content.ContentValues.TAG;
 
 /**
  * Analog watch face with a ticking second hand. In ambient mode, the second hand isn't
@@ -46,6 +39,8 @@ import static android.content.ContentValues.TAG;
  * in the Google Watch Face Code Lab:
  * https://codelabs.developers.google.com/codelabs/watchface/index.html#0
  */
+
+
 public class CoffeeWatchFace extends CanvasWatchFaceService {
 
     /*
@@ -112,6 +107,7 @@ public class CoffeeWatchFace extends CanvasWatchFaceService {
                     String timestemp = bundle.getString(CoffeeFirebaseMessagingService.TIMESTEMP);
                     String fillLevel = bundle.getString(CoffeeFirebaseMessagingService.FILLLEVEL);
                     coffeeDataMessage = new CoffeeDataMessage(type, timestemp, fillLevel);
+                    changeCoffeeIcon();
                 }
             }
         };
@@ -131,8 +127,7 @@ public class CoffeeWatchFace extends CanvasWatchFaceService {
         private Paint mSecondPaint;
         private Paint mTickAndCirclePaint;
         private Paint mBackgroundPaint;
-        private Bitmap mBackgroundBitmap;
-        private Bitmap mGrayBackgroundBitmap;
+        private Bitmap coffeeIconBitmap;
         private boolean mAmbient;
         private boolean mLowBitAmbient;
         private boolean mBurnInProtection;
@@ -151,23 +146,17 @@ public class CoffeeWatchFace extends CanvasWatchFaceService {
             initializeWatchFace();
         }
 
+        private void changeCoffeeIcon(){
+            if(coffeeDataMessage != null && coffeeDataMessage.getType()!= CoffeeDataMessage.COFFEE_MESSAGE_TYPE_INVALID) {
+                coffeeIconBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.coffee_ready);
+            }else {
+                coffeeIconBitmap = null;
+            }
+        }
+
         private void initializeBackground() {
             mBackgroundPaint = new Paint();
             mBackgroundPaint.setColor(Color.BLACK);
-            mBackgroundBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.bg);
-
-            /* Extracts colors from background image to improve watchface style. */
-            Palette.from(mBackgroundBitmap).generate(new Palette.PaletteAsyncListener() {
-                @Override
-                public void onGenerated(Palette palette) {
-                    if (palette != null) {
-                        mWatchHandHighlightColor = palette.getVibrantColor(Color.RED);
-                        mWatchHandColor = palette.getLightVibrantColor(Color.WHITE);
-                        mWatchHandShadowColor = palette.getDarkMutedColor(Color.BLACK);
-                        updateWatchHandStyle();
-                    }
-                }
-            });
         }
 
         private void initializeWatchFace() {
@@ -303,43 +292,8 @@ public class CoffeeWatchFace extends CanvasWatchFaceService {
             mSecondHandLength = (float) (mCenterX * 0.875);
             sMinuteHandLength = (float) (mCenterX * 0.75);
             sHourHandLength = (float) (mCenterX * 0.5);
-
-
-            /* Scale loaded background image (more efficient) if surface dimensions change. */
-            float scale = ((float) width) / (float) mBackgroundBitmap.getWidth();
-
-            mBackgroundBitmap = Bitmap.createScaledBitmap(mBackgroundBitmap,
-                    (int) (mBackgroundBitmap.getWidth() * scale),
-                    (int) (mBackgroundBitmap.getHeight() * scale), true);
-
-            /*
-             * Create a gray version of the image only if it will look nice on the device in
-             * ambient mode. That means we don't want devices that support burn-in
-             * protection (slight movements in pixels, not great for images going all the way to
-             * edges) and low ambient mode (degrades image quality).
-             *
-             * Also, if your watch face will know about all images ahead of time (users aren't
-             * selecting their own photos for the watch face), it will be more
-             * efficient to create a black/white version (png, etc.) and load that when you need it.
-             */
-            if (!mBurnInProtection && !mLowBitAmbient) {
-                initGrayBackgroundBitmap();
-            }
         }
 
-        private void initGrayBackgroundBitmap() {
-            mGrayBackgroundBitmap = Bitmap.createBitmap(
-                    mBackgroundBitmap.getWidth(),
-                    mBackgroundBitmap.getHeight(),
-                    Bitmap.Config.ARGB_8888);
-            Canvas canvas = new Canvas(mGrayBackgroundBitmap);
-            Paint grayPaint = new Paint();
-            ColorMatrix colorMatrix = new ColorMatrix();
-            colorMatrix.setSaturation(0);
-            ColorMatrixColorFilter filter = new ColorMatrixColorFilter(colorMatrix);
-            grayPaint.setColorFilter(filter);
-            canvas.drawBitmap(mBackgroundBitmap, 0, 0, grayPaint);
-        }
 
         /**
          * Captures tap event (and tap type). The {@link WatchFaceService#TAP_TYPE_TAP} case can be
@@ -356,12 +310,32 @@ public class CoffeeWatchFace extends CanvasWatchFaceService {
                     break;
                 case TAP_TYPE_TAP:
                     // The user has completed the tap gesture.
-                    // TODO: Add code to handle the tap gesture.
-                    Toast.makeText(getApplicationContext(), R.string.message, Toast.LENGTH_SHORT)
-                            .show();
+                        Toast.makeText(getApplicationContext(), selectCoffeeToastMessage(), Toast.LENGTH_LONG)
+                                .show();
+                    coffeeDataMessage = null;
+                    changeCoffeeIcon();
                     break;
             }
             invalidate();
+        }
+
+        private int selectCoffeeToastMessage() {
+            int messageResId = R.string.tapMessageEmpty;
+            if (coffeeDataMessage != null) {
+                switch (coffeeDataMessage.getType()) {
+                    case CoffeeDataMessage.COFFEE_MESSAGE_TYPE_FILL_LEVEL:
+                        messageResId = R.string.tapMessageFillLevel;
+                        break;
+                    case CoffeeDataMessage.COFFEE_MESSAGE_TYPE_READY:
+                        messageResId = R.string.tapMessageReady;
+                        break;
+                    case CoffeeDataMessage.COFFEE_MESSAGE_TYPE_BREWING:
+                        messageResId = R.string.tapMessageBrewing;
+                        break;
+                }
+
+            }
+            return messageResId;
         }
 
         @Override
@@ -374,13 +348,7 @@ public class CoffeeWatchFace extends CanvasWatchFaceService {
         }
 
         private void drawBackground(Canvas canvas) {
-            if (mAmbient && (mLowBitAmbient || mBurnInProtection)) {
                 canvas.drawColor(Color.BLACK);
-            } else if (mAmbient) {
-                canvas.drawBitmap(mGrayBackgroundBitmap, 0, 0, mBackgroundPaint);
-            } else {
-                canvas.drawBitmap(mBackgroundBitmap, 0, 0, mBackgroundPaint);
-            }
         }
 
         private void drawWatchFace(Canvas canvas) {
@@ -416,20 +384,16 @@ public class CoffeeWatchFace extends CanvasWatchFaceService {
             final float hoursRotation = (mCalendar.get(Calendar.HOUR) * 30) + hourHandOffset;
 
 
-            if (coffeeDataMessage != null){
+            if (coffeeIconBitmap != null) {
                 Paint paint = new Paint();
-                paint.setColor(Color.WHITE);
-                paint.setStyle(Paint.Style.FILL);
-                canvas.drawPaint(paint);
-
-                paint.setColor(Color.BLACK);
+                paint.setColor(mWatchHandColor);
                 paint.setTextSize(20);
-                canvas.drawText(coffeeDataMessage.getType(), 10, 10, paint);
+                canvas.drawBitmap(coffeeIconBitmap, mCenterX, mCenterY/2f, paint);
             }
-                /*
-                 * Save the canvas state before we can begin to rotate it.
-                 */
-                canvas.save();
+            /*
+             * Save the canvas state before we can begin to rotate it.
+             */
+            canvas.save();
 
             canvas.rotate(hoursRotation, mCenterX, mCenterY);
             canvas.drawLine(

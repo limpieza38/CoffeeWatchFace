@@ -1,18 +1,40 @@
 package com.coffee.moc.Model;
-
 import android.util.Log;
-
 import java.security.InvalidParameterException;
 import java.util.Date;
-import java.util.Map;
+
 
 public class CoffeeDataMessage {
     private static final String TAG = "CoffeeDataMessage";
-    private String type;
+    public static final int COFFEE_MESSAGE_TYPE_BREWING = 1;
+    public static final int COFFEE_MESSAGE_TYPE_READY = 2;
+    public static final int COFFEE_MESSAGE_TYPE_FILL_LEVEL = 3;
+    public static final int COFFEE_MESSAGE_TYPE_INVALID = 0;
+
+    private int type = COFFEE_MESSAGE_TYPE_INVALID;
     private int fillLevel;
     private Date date;
 
-    public String getType() {
+
+    private void setType(String iType) {
+        if (iType != null) {
+            switch (iType) {
+                case "coffee_brewing":
+                    type = COFFEE_MESSAGE_TYPE_BREWING;
+                    break;
+                case "coffee_ready":
+                    type = COFFEE_MESSAGE_TYPE_READY;
+                    break;
+                case "coffee_fill_level":
+                    type = COFFEE_MESSAGE_TYPE_FILL_LEVEL;
+                    break;
+                default:
+                    type = COFFEE_MESSAGE_TYPE_INVALID;
+            }
+        }
+    }
+
+    public int getType() {
         return type;
     }
 
@@ -24,10 +46,10 @@ public class CoffeeDataMessage {
         return date;
     }
 
-    public CoffeeDataMessage(String iType, String iTimestemp, String iFillLevel) {
-        if (iType != null) {
-            type = iType;
-            if (iTimestemp != null) {
+    public CoffeeDataMessage(String iType, String iTimestamp, String iFillLevel) {
+        setType(iType);
+        if (type != COFFEE_MESSAGE_TYPE_INVALID){
+            if (iTimestamp != null) {
                 // TODO Use Timestamp
                /* TimeZone tz = TimeZone.getTimeZone("UTC");
                 SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm'Z'"); // Quoted "Z" to indicate UTC, no timezone offset
@@ -43,8 +65,8 @@ public class CoffeeDataMessage {
                 date = new Date();
                 Log.e(TAG, "No Timestamp");
             }
-            if (type.equals("fill_level") && iFillLevel != null) {
-                    fillLevel = Integer.parseInt(iFillLevel);
+            if (type == COFFEE_MESSAGE_TYPE_FILL_LEVEL && iFillLevel != null) {
+                fillLevel = Integer.parseInt(iFillLevel);
             }
         } else {
             throw new InvalidParameterException("No message type");

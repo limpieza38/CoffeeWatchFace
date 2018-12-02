@@ -8,7 +8,7 @@ app = admin.initializeApp({
 
 var message = {
     data: {
-        type:"fill_level",
+        type:"coffee_ready",
         timestamp:"2018-11-20T18:21Z",
         fillLevel: "80"
     }

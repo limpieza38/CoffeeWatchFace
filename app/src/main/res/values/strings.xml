@@ -1,5 +1,8 @@
 <resources>
     <string name="app_name">CoffeeWatchFace</string>
-    <string name="message">Watch face tapped</string>
-    <string name="my_analog_name">My Analog</string>
+    <string name="tapMessageEmpty">No Coffee information available</string>
+    <string name="tapMessageBrewing">Coffee is brewing</string>
+    <string name="tapMessageReady">Coffee is ready</string>
+    <string name="tapMessageFillLevel">The Coffee fill level is </string>
+    <string name="my_analog_name">Coffee Watch Face</string>
 </resources>
