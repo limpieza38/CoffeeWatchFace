@@ -146,17 +146,35 @@ public class CoffeeWatchFace extends CanvasWatchFaceService {
             initializeWatchFace();
         }
 
-        private void changeCoffeeIcon(){
-            if(coffeeDataMessage != null && coffeeDataMessage.getType()!= CoffeeDataMessage.COFFEE_MESSAGE_TYPE_INVALID) {
-                coffeeIconBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.coffee_ready);
-            }else {
+        private void changeCoffeeIcon() {
+            if (coffeeDataMessage != null && coffeeDataMessage.getType() != CoffeeDataMessage.COFFEE_MESSAGE_TYPE_INVALID) {
+                switch (coffeeDataMessage.getType()) {
+                    case CoffeeDataMessage.COFFEE_MESSAGE_TYPE_BREWING:
+                        coffeeIconBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.coffee_machine_0);
+                        break;
+                    case CoffeeDataMessage.COFFEE_MESSAGE_TYPE_READY:
+                        coffeeIconBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.coffee_cup_100);
+                        break;
+                    case CoffeeDataMessage.COFFEE_MESSAGE_TYPE_FILL_LEVEL:
+                        int fillLevel = coffeeDataMessage.getFillLevel();
+                        if (fillLevel >= 90) {
+                            coffeeIconBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.coffee_cup_100);
+                        } else if (fillLevel >= 55) {
+                            coffeeIconBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.coffee_cup_66);
+                        } else if (fillLevel >= 20) {
+                            coffeeIconBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.coffee_cup_33);
+                        } else {
+                            coffeeIconBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.coffee_cup_0);
+                        }
+                }
+            } else {
                 coffeeIconBitmap = null;
             }
         }
 
         private void initializeBackground() {
             mBackgroundPaint = new Paint();
-            mBackgroundPaint.setColor(Color.BLACK);
+            mBackgroundPaint.setColor(Color.GRAY);
         }
 
         private void initializeWatchFace() {
@@ -310,8 +328,8 @@ public class CoffeeWatchFace extends CanvasWatchFaceService {
                     break;
                 case TAP_TYPE_TAP:
                     // The user has completed the tap gesture.
-                        Toast.makeText(getApplicationContext(), selectCoffeeToastMessage(), Toast.LENGTH_LONG)
-                                .show();
+                    Toast.makeText(getApplicationContext(), selectCoffeeToastMessage(), Toast.LENGTH_LONG)
+                            .show();
                     coffeeDataMessage = null;
                     changeCoffeeIcon();
                     break;
@@ -348,7 +366,7 @@ public class CoffeeWatchFace extends CanvasWatchFaceService {
         }
 
         private void drawBackground(Canvas canvas) {
-                canvas.drawColor(Color.BLACK);
+            canvas.drawPaint(mBackgroundPaint);
         }
 
         private void drawWatchFace(Canvas canvas) {
@@ -388,7 +406,9 @@ public class CoffeeWatchFace extends CanvasWatchFaceService {
                 Paint paint = new Paint();
                 paint.setColor(mWatchHandColor);
                 paint.setTextSize(20);
-                canvas.drawBitmap(coffeeIconBitmap, mCenterX, mCenterY/2f, paint);
+                int width = coffeeIconBitmap.getWidth();
+                int height = coffeeIconBitmap.getHeight();
+                canvas.drawBitmap(coffeeIconBitmap, mCenterX - (width / 2f), mCenterY / 2f - (height / 2f), paint);
             }
             /*
              * Save the canvas state before we can begin to rotate it.

@@ -6,17 +6,31 @@ app = admin.initializeApp({
     databaseURL: "https://coffee-page-moc.firebaseio.com"
 });
 
-var message = {
+var messageFillLevel = {
+    data: {
+        type:"coffee_fill_level",
+        timestamp:"2018-11-20T18:21Z",
+        fillLevel: "33"
+    }
+}
+
+var messageReady = {
     data: {
         type:"coffee_ready",
         timestamp:"2018-11-20T18:21Z",
-        fillLevel: "80"
+    }
+}
+
+var messageBrewing = {
+    data: {
+        type:"coffee_brewing",
+        timestamp:"2018-11-20T18:21Z"
     }
 }
 
 var messaging = admin.messaging(app);
 
-messaging.sendToTopic("coffee",message)
+messaging.sendToTopic("coffee",messageFillLevel)
     .then((response) => {
         // Response is a message ID string.
         console.log('Successfully sent message:', response);
