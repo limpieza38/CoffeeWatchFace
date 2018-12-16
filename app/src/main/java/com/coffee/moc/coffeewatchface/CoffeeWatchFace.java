@@ -81,7 +81,7 @@ public class CoffeeWatchFace extends CanvasWatchFaceService {
 
     private class Engine extends CanvasWatchFaceService.Engine {
         private static final float HOUR_STROKE_WIDTH = 5f;
-        private static final float MINUTE_STROKE_WIDTH = 3f;
+        private static final float MINUTE_STROKE_WIDTH = 5f;
         private static final float SECOND_TICK_STROKE_WIDTH = 2f;
 
         private static final float CENTER_GAP_AND_CIRCLE_RADIUS = 4f;
@@ -104,10 +104,10 @@ public class CoffeeWatchFace extends CanvasWatchFaceService {
                 Bundle bundle = intent.getExtras();
                 if (bundle != null) {
                     String type = bundle.getString(CoffeeFirebaseMessagingService.TYPE);
-                    String timestemp = bundle.getString(CoffeeFirebaseMessagingService.TIMESTEMP);
+                    String timestamp = bundle.getString(CoffeeFirebaseMessagingService.TIMESTAMP);
                     String fillLevel = bundle.getString(CoffeeFirebaseMessagingService.FILLLEVEL);
-                    coffeeDataMessage = new CoffeeDataMessage(type, timestemp, fillLevel);
-                    changeCoffeeIcon();
+                    coffeeDataMessage = new CoffeeDataMessage(type, timestamp, fillLevel);
+                    changeDrawableCoffeeElements();
                 }
             }
         };
@@ -127,7 +127,10 @@ public class CoffeeWatchFace extends CanvasWatchFaceService {
         private Paint mSecondPaint;
         private Paint mTickAndCirclePaint;
         private Paint mBackgroundPaint;
+        private Paint mCoffeePaint;
         private Bitmap coffeeIconBitmap;
+        private float coffeeTimeRotation = 0;
+        private final Bitmap coffeeTimeBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.coffee_cup_100_small);
         private boolean mAmbient;
         private boolean mLowBitAmbient;
         private boolean mBurnInProtection;
@@ -146,7 +149,7 @@ public class CoffeeWatchFace extends CanvasWatchFaceService {
             initializeWatchFace();
         }
 
-        private void changeCoffeeIcon() {
+        private void changeDrawableCoffeeElements() {
             if (coffeeDataMessage != null && coffeeDataMessage.getType() != CoffeeDataMessage.COFFEE_MESSAGE_TYPE_INVALID) {
                 switch (coffeeDataMessage.getType()) {
                     case CoffeeDataMessage.COFFEE_MESSAGE_TYPE_BREWING:
@@ -167,8 +170,14 @@ public class CoffeeWatchFace extends CanvasWatchFaceService {
                             coffeeIconBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.coffee_cup_0);
                         }
                 }
+                Calendar cal = coffeeDataMessage.getCalendar();
+                if(cal != null) {
+                    final float hourHandOffset = (float) (cal.get(Calendar.MINUTE) * Math.PI * 2f /(60f*12f));
+                    coffeeTimeRotation = (float) (cal.get(Calendar.HOUR%12) * Math.PI * 2f / 12f)+hourHandOffset;
+                }
             } else {
                 coffeeIconBitmap = null;
+                coffeeTimeRotation = 0f;
             }
         }
 
@@ -180,36 +189,35 @@ public class CoffeeWatchFace extends CanvasWatchFaceService {
         private void initializeWatchFace() {
             /* Set defaults for colors */
             mWatchHandColor = Color.WHITE;
-            mWatchHandHighlightColor = Color.RED;
-            mWatchHandShadowColor = Color.BLACK;
+            mWatchHandHighlightColor = Color.BLUE;
 
             mHourPaint = new Paint();
             mHourPaint.setColor(mWatchHandColor);
             mHourPaint.setStrokeWidth(HOUR_STROKE_WIDTH);
             mHourPaint.setAntiAlias(true);
             mHourPaint.setStrokeCap(Paint.Cap.ROUND);
-            mHourPaint.setShadowLayer(SHADOW_RADIUS, 0, 0, mWatchHandShadowColor);
 
             mMinutePaint = new Paint();
             mMinutePaint.setColor(mWatchHandColor);
             mMinutePaint.setStrokeWidth(MINUTE_STROKE_WIDTH);
             mMinutePaint.setAntiAlias(true);
             mMinutePaint.setStrokeCap(Paint.Cap.ROUND);
-            mMinutePaint.setShadowLayer(SHADOW_RADIUS, 0, 0, mWatchHandShadowColor);
 
             mSecondPaint = new Paint();
             mSecondPaint.setColor(mWatchHandHighlightColor);
             mSecondPaint.setStrokeWidth(SECOND_TICK_STROKE_WIDTH);
             mSecondPaint.setAntiAlias(true);
             mSecondPaint.setStrokeCap(Paint.Cap.ROUND);
-            mSecondPaint.setShadowLayer(SHADOW_RADIUS, 0, 0, mWatchHandShadowColor);
 
             mTickAndCirclePaint = new Paint();
             mTickAndCirclePaint.setColor(mWatchHandColor);
             mTickAndCirclePaint.setStrokeWidth(SECOND_TICK_STROKE_WIDTH);
             mTickAndCirclePaint.setAntiAlias(true);
             mTickAndCirclePaint.setStyle(Paint.Style.STROKE);
-            mTickAndCirclePaint.setShadowLayer(SHADOW_RADIUS, 0, 0, mWatchHandShadowColor);
+
+            mCoffeePaint = new Paint();
+            mCoffeePaint.setColor(mWatchHandHighlightColor);
+            mTickAndCirclePaint.setAntiAlias(true);
         }
 
         @Override
@@ -248,32 +256,27 @@ public class CoffeeWatchFace extends CanvasWatchFaceService {
                 mMinutePaint.setColor(Color.WHITE);
                 mSecondPaint.setColor(Color.WHITE);
                 mTickAndCirclePaint.setColor(Color.WHITE);
+                mCoffeePaint.setColor(Color.WHITE);
 
                 mHourPaint.setAntiAlias(false);
                 mMinutePaint.setAntiAlias(false);
                 mSecondPaint.setAntiAlias(false);
                 mTickAndCirclePaint.setAntiAlias(false);
-
-                mHourPaint.clearShadowLayer();
-                mMinutePaint.clearShadowLayer();
-                mSecondPaint.clearShadowLayer();
-                mTickAndCirclePaint.clearShadowLayer();
+                mCoffeePaint.setAntiAlias(false);
 
             } else {
                 mHourPaint.setColor(mWatchHandColor);
                 mMinutePaint.setColor(mWatchHandColor);
                 mSecondPaint.setColor(mWatchHandHighlightColor);
                 mTickAndCirclePaint.setColor(mWatchHandColor);
+                mCoffeePaint.setColor(mWatchHandHighlightColor);
 
                 mHourPaint.setAntiAlias(true);
                 mMinutePaint.setAntiAlias(true);
                 mSecondPaint.setAntiAlias(true);
                 mTickAndCirclePaint.setAntiAlias(true);
+                mCoffeePaint.setAntiAlias(true);
 
-                mHourPaint.setShadowLayer(SHADOW_RADIUS, 0, 0, mWatchHandShadowColor);
-                mMinutePaint.setShadowLayer(SHADOW_RADIUS, 0, 0, mWatchHandShadowColor);
-                mSecondPaint.setShadowLayer(SHADOW_RADIUS, 0, 0, mWatchHandShadowColor);
-                mTickAndCirclePaint.setShadowLayer(SHADOW_RADIUS, 0, 0, mWatchHandShadowColor);
             }
         }
 
@@ -331,7 +334,7 @@ public class CoffeeWatchFace extends CanvasWatchFaceService {
                     Toast.makeText(getApplicationContext(), selectCoffeeToastMessage(), Toast.LENGTH_LONG)
                             .show();
                     coffeeDataMessage = null;
-                    changeCoffeeIcon();
+                    changeDrawableCoffeeElements();
                     break;
             }
             invalidate();
@@ -366,7 +369,9 @@ public class CoffeeWatchFace extends CanvasWatchFaceService {
         }
 
         private void drawBackground(Canvas canvas) {
+
             canvas.drawPaint(mBackgroundPaint);
+
         }
 
         private void drawWatchFace(Canvas canvas) {
@@ -376,7 +381,8 @@ public class CoffeeWatchFace extends CanvasWatchFaceService {
              * cases where you want to allow users to select their own photos, this dynamically
              * creates them on top of the photo.
              */
-            float innerTickRadius = mCenterX - 10;
+            float innerTickRadius = mCenterX - 20;
+            float iconTickRadius = mCenterX-10;
             float outerTickRadius = mCenterX;
             for (int tickIndex = 0; tickIndex < 12; tickIndex++) {
                 float tickRot = (float) (tickIndex * Math.PI * 2 / 12);
@@ -387,6 +393,18 @@ public class CoffeeWatchFace extends CanvasWatchFaceService {
                 canvas.drawLine(mCenterX + innerX, mCenterY + innerY,
                         mCenterX + outerX, mCenterY + outerY, mTickAndCirclePaint);
             }
+            if (coffeeIconBitmap != null) {
+                int width = coffeeIconBitmap.getWidth();
+                int height = coffeeIconBitmap.getHeight();
+                canvas.drawBitmap(coffeeIconBitmap, mCenterX - (width / 2f), mCenterY / 2f - (height / 2f), mCoffeePaint);
+                if(coffeeTimeRotation > 0f){
+                    canvas.save();
+                    float iconX = (float) Math.sin(coffeeTimeRotation) * innerTickRadius-coffeeTimeBitmap.getWidth()/2f;
+                    float iconY = (float) -Math.cos(coffeeTimeRotation) * innerTickRadius;
+                    canvas.drawBitmap(coffeeTimeBitmap, mCenterX+iconX, mCenterY+iconY, mCoffeePaint);
+                }
+            }
+            canvas.save();
 
             /*
              * These calculations reflect the rotation in degrees per unit of time, e.g.,
@@ -402,20 +420,9 @@ public class CoffeeWatchFace extends CanvasWatchFaceService {
             final float hoursRotation = (mCalendar.get(Calendar.HOUR) * 30) + hourHandOffset;
 
 
-            if (coffeeIconBitmap != null) {
-                Paint paint = new Paint();
-                paint.setColor(mWatchHandColor);
-                paint.setTextSize(20);
-                int width = coffeeIconBitmap.getWidth();
-                int height = coffeeIconBitmap.getHeight();
-                canvas.drawBitmap(coffeeIconBitmap, mCenterX - (width / 2f), mCenterY / 2f - (height / 2f), paint);
-            }
-            /*
-             * Save the canvas state before we can begin to rotate it.
-             */
-            canvas.save();
 
-            canvas.rotate(hoursRotation, mCenterX, mCenterY);
+
+            canvas.rotate(hoursRotation-coffeeTimeRotation, mCenterX, mCenterY);
             canvas.drawLine(
                     mCenterX,
                     mCenterY - CENTER_GAP_AND_CIRCLE_RADIUS,

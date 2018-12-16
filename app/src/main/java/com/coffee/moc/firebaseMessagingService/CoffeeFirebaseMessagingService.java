@@ -14,7 +14,7 @@ public class CoffeeFirebaseMessagingService extends FirebaseMessagingService {
     private static final String TAG = "CoffeeFirebaseMessagingService";
     public static final String NOTIFICATION = "com.coffee.moc.firebaseMessagingService";
     public static final String TYPE = "type";
-    public static final String TIMESTEMP = "timestemp";
+    public static final String TIMESTAMP = "timestamp";
     public static final String FILLLEVEL = "fillLevel";
     @Override
     public void onNewToken(String token) {
@@ -52,8 +52,8 @@ public class CoffeeFirebaseMessagingService extends FirebaseMessagingService {
         if(data.containsKey(TYPE)){
             intent.putExtra(TYPE, data.get(TYPE));
         }
-        if(data.containsKey(TIMESTEMP)){
-            intent.putExtra(TIMESTEMP, data.get(TIMESTEMP));
+        if(data.containsKey(TIMESTAMP)){
+            intent.putExtra(TIMESTAMP, data.get(TIMESTAMP));
         }
         if(data.containsKey(FILLLEVEL)){
             intent.putExtra(FILLLEVEL, data.get(FILLLEVEL));

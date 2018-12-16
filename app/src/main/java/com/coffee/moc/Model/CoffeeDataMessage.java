@@ -1,11 +1,16 @@
 package com.coffee.moc.Model;
 import android.util.Log;
 import java.security.InvalidParameterException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.TimeZone;
 
 
 public class CoffeeDataMessage {
     private static final String TAG = "CoffeeDataMessage";
+    private final static SimpleDateFormat ISO8601DATEFORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm'Z'");
     public static final int COFFEE_MESSAGE_TYPE_BREWING = 1;
     public static final int COFFEE_MESSAGE_TYPE_READY = 2;
     public static final int COFFEE_MESSAGE_TYPE_FILL_LEVEL = 3;
@@ -13,7 +18,7 @@ public class CoffeeDataMessage {
 
     private int type = COFFEE_MESSAGE_TYPE_INVALID;
     private int fillLevel;
-    private Date date;
+    private Calendar calendar = null;
 
 
     private void setType(String iType) {
@@ -42,27 +47,23 @@ public class CoffeeDataMessage {
         return fillLevel;
     }
 
-    public Date getDate() {
-        return date;
+    public Calendar getCalendar() {
+        return calendar;
     }
 
     public CoffeeDataMessage(String iType, String iTimestamp, String iFillLevel) {
         setType(iType);
         if (type != COFFEE_MESSAGE_TYPE_INVALID){
             if (iTimestamp != null) {
-                // TODO Use Timestamp
-               /* TimeZone tz = TimeZone.getTimeZone("UTC");
-                SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm'Z'"); // Quoted "Z" to indicate UTC, no timezone offset
-                format.setTimeZone(tz);
+                calendar = Calendar.getInstance(TimeZone.getDefault());
                 try {
-                    date = format.parse(remoteMessage.get("timestamp"));
+                    calendar.setTime(ISO8601DATEFORMAT.parse(iTimestamp));
                 } catch (ParseException e) {
-                    date = new Date();
-                    Log.w(TAG, "No valid Timestamp");
-                } */
-                date = new Date();
+                    Log.e(TAG, "Error Parsing Timestamp "+iTimestamp);
+                    calendar = null;
+                }
+
             } else {
-                date = new Date();
                 Log.e(TAG, "No Timestamp");
             }
             if (type == COFFEE_MESSAGE_TYPE_FILL_LEVEL && iFillLevel != null) {
