@@ -1,10 +1,11 @@
-package com.coffee.moc.Model;
+package com.test.moc.coffeefirebasemessaging.Model;
+
 import android.util.Log;
+
 import java.security.InvalidParameterException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.TimeZone;
 
 
@@ -70,7 +71,7 @@ public class CoffeeDataMessage {
                 fillLevel = Integer.parseInt(iFillLevel);
             }
         } else {
-            throw new InvalidParameterException("No message type");
+            // throw new InvalidParameterException("No message type");
         }
     }
 

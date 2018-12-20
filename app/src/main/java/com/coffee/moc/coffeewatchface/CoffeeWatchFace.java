@@ -19,8 +19,8 @@ import android.support.wearable.watchface.WatchFaceStyle;
 import android.view.SurfaceHolder;
 import android.widget.Toast;
 
-import com.coffee.moc.Model.CoffeeDataMessage;
-import com.coffee.moc.firebaseMessagingService.CoffeeFirebaseMessagingService;
+import com.test.moc.coffeefirebasemessaging.Model.CoffeeDataMessage;
+import com.test.moc.coffeefirebasemessaging.firebaseMessagingService.CoffeeFirebaseMessagingService;
 
 import java.lang.ref.WeakReference;
 import java.util.Calendar;

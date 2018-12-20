@@ -1,9 +1,8 @@
-package com.coffee.moc.firebaseMessagingService;
+package com.test.moc.coffeefirebasemessaging.firebaseMessagingService;
 
 import android.content.Intent;
 import android.util.Log;
 
-import com.coffee.moc.Model.CoffeeDataMessage;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
