@@ -23,7 +23,7 @@ public class CoffeeComplicationProviderService extends ComplicationProviderServi
     @Override
     public void onComplicationActivated(
             int complicationId, int dataType, ComplicationManager complicationManager) {
-        super.onComplicationActivated(complicationId, dataType, complicationManager);
+     //   super.onComplicationActivated(complicationId, dataType, complicationManager);
         Log.d(TAG, "onComplicationActivated(): " + complicationId);
     }
 
@@ -43,7 +43,12 @@ public class CoffeeComplicationProviderService extends ComplicationProviderServi
     public void onComplicationUpdate(
             int complicationId, int dataType, ComplicationManager complicationManager) {
 
-        Log.d(TAG, "onComplicationUpdate() id: " + complicationId);
+        // Create Tap Action so that the user can trigger an update by tapping the complication.
+        ComponentName thisProvider = new ComponentName(this, getClass());
+        // We pass the complication id, so we can only update the specific complication tapped.
+        PendingIntent complicationPendingIntent =
+                CoffeeComplicationTapBroadcastReceiver.getToggleIntent(
+                        this, thisProvider, complicationId);
 
         SharedPreferences preferences  = getSharedPreferences(CoffeeMessageBroadcastReceiver.COMPLICATION_PROVIDER_PREFERENCES_FILE_KEY, 0);
         String type = preferences.getString(CoffeeMessageBroadcastReceiver.PREFERENCE_KEY+CoffeeFirebaseMessagingService.TYPE, null);
@@ -66,6 +71,7 @@ public class CoffeeComplicationProviderService extends ComplicationProviderServi
                     complicationData =
                             new ComplicationData.Builder(ComplicationData.TYPE_SHORT_TEXT)
                                     .setShortText(ComplicationText.plainText(typeText))
+                                    .setTapAction(complicationPendingIntent)
                                     .build();
                     break;
                 default:
