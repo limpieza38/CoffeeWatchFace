@@ -19,11 +19,11 @@
 
             <meta-data
                 android:name="android.support.wearable.complications.SUPPORTED_TYPES"
-                android:value="SHORT_TEXT"/>
-
+                android:value="ICON"
+               />
             <meta-data
                 android:name="android.support.wearable.complications.UPDATE_PERIOD_SECONDS"
-                android:value="1"/>
+                android:value="60"/>
         </service>
         <service android:name="com.test.moc.coffeefirebasemessaging.firebaseMessagingService.CoffeeFirebaseMessagingService">
             <intent-filter>

@@ -30,7 +30,7 @@ var messageBrewing = {
 
 var messaging = admin.messaging(app);
 
-messaging.sendToTopic("coffee",messageFillLevel)
+messaging.sendToTopic("coffee",messageBrewing)
     .then((response) => {
         // Response is a message ID string.
         console.log('Successfully sent message:', response);

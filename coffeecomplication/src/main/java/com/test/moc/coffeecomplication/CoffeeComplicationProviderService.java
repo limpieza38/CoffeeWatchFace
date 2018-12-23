@@ -4,12 +4,11 @@ import android.annotation.SuppressLint;
 import android.app.PendingIntent;
 import android.content.ComponentName;
 import android.content.SharedPreferences;
+import android.graphics.drawable.Icon;
 import android.support.wearable.complications.ComplicationData;
 import android.support.wearable.complications.ComplicationManager;
 import android.support.wearable.complications.ComplicationProviderService;
-import android.support.wearable.complications.ComplicationText;
 import android.util.Log;
-
 
 import com.test.moc.coffeefirebasemessaging.Model.CoffeeDataMessage;
 import com.test.moc.coffeefirebasemessaging.firebaseMessagingService.CoffeeFirebaseMessagingService;
@@ -23,7 +22,7 @@ public class CoffeeComplicationProviderService extends ComplicationProviderServi
     @Override
     public void onComplicationActivated(
             int complicationId, int dataType, ComplicationManager complicationManager) {
-     //   super.onComplicationActivated(complicationId, dataType, complicationManager);
+        //   super.onComplicationActivated(complicationId, dataType, complicationManager);
         Log.d(TAG, "onComplicationActivated(): " + complicationId);
     }
 
@@ -50,27 +49,36 @@ public class CoffeeComplicationProviderService extends ComplicationProviderServi
                 CoffeeComplicationTapBroadcastReceiver.getToggleIntent(
                         this, thisProvider, complicationId);
 
-        SharedPreferences preferences  = getSharedPreferences(CoffeeMessageBroadcastReceiver.COMPLICATION_PROVIDER_PREFERENCES_FILE_KEY, 0);
-        String type = preferences.getString(CoffeeMessageBroadcastReceiver.PREFERENCE_KEY+CoffeeFirebaseMessagingService.TYPE, null);
-        String timestamp = preferences.getString(CoffeeMessageBroadcastReceiver.PREFERENCE_KEY+CoffeeFirebaseMessagingService.TIMESTAMP, null);
-        String fillLevel = preferences.getString(CoffeeMessageBroadcastReceiver.PREFERENCE_KEY+CoffeeFirebaseMessagingService.FILLLEVEL, null);
-
+        SharedPreferences preferences = getSharedPreferences(CoffeeMessageBroadcastReceiver.COMPLICATION_PROVIDER_PREFERENCES_FILE_KEY, 0);
+        String type = preferences.getString(CoffeeMessageBroadcastReceiver.PREFERENCE_KEY + CoffeeFirebaseMessagingService.TYPE, null);
+        String timestamp = preferences.getString(CoffeeMessageBroadcastReceiver.PREFERENCE_KEY + CoffeeFirebaseMessagingService.TIMESTAMP, null);
+        String fillLevel = preferences.getString(CoffeeMessageBroadcastReceiver.PREFERENCE_KEY + CoffeeFirebaseMessagingService.FILLLEVEL, null);
 
 
         CoffeeDataMessage coffeeDataMessage = new CoffeeDataMessage(type, timestamp, fillLevel);
-        String tText = String.format(Locale.getDefault(), "%d!", 0);
+
+        Icon icon = Icon.createWithResource(this , R.drawable.ic_coffee_cup_66);
         ComplicationData complicationData =
-                new ComplicationData.Builder(ComplicationData.TYPE_SHORT_TEXT)
-                        .setShortText(ComplicationText.plainText(tText))
+                new ComplicationData.Builder(ComplicationData.TYPE_ICON)
+                        .setIcon(icon)
                         .build();
 
-        if(coffeeDataMessage.getType() != CoffeeDataMessage.COFFEE_MESSAGE_TYPE_INVALID) {
+        if (coffeeDataMessage.getType() != CoffeeDataMessage.COFFEE_MESSAGE_TYPE_INVALID) {
+            String typeText = String.format(Locale.getDefault(), "%d!", coffeeDataMessage.getType());
             switch (dataType) {
-                case ComplicationData.TYPE_SHORT_TEXT:
-                    String typeText = String.format(Locale.getDefault(), "%d!", coffeeDataMessage.getType());
+               /* case ComplicationData.TYPE_SHORT_TEXT:
+
                     complicationData =
                             new ComplicationData.Builder(ComplicationData.TYPE_SHORT_TEXT)
                                     .setShortText(ComplicationText.plainText(typeText))
+                                    .setTapAction(complicationPendingIntent)
+                                    .build();
+                    break; */
+                case ComplicationData.TYPE_ICON:
+                    Icon coffeeIcon = this.createComplicationIcon(coffeeDataMessage);
+                    complicationData =
+                            new ComplicationData.Builder(ComplicationData.TYPE_ICON)
+                                    .setIcon( coffeeIcon)
                                     .setTapAction(complicationPendingIntent)
                                     .build();
                     break;
@@ -89,6 +97,35 @@ public class CoffeeComplicationProviderService extends ComplicationProviderServi
             // job can finish and the wake lock isn't held any longer than necessary.
             complicationManager.noUpdateRequired(complicationId);
         }
+    }
+
+
+    private Icon createComplicationIcon(CoffeeDataMessage coffeeDataMessage) {
+        Icon coffeeIcon = null;
+        if (coffeeDataMessage != null && coffeeDataMessage.getType() != CoffeeDataMessage.COFFEE_MESSAGE_TYPE_INVALID) {
+            switch (coffeeDataMessage.getType()) {
+                case CoffeeDataMessage.COFFEE_MESSAGE_TYPE_BREWING:
+                    coffeeIcon = Icon.createWithResource(this, R.drawable.ic_coffee_machine_0);
+                    break;
+                case CoffeeDataMessage.COFFEE_MESSAGE_TYPE_READY:
+                    coffeeIcon = Icon.createWithResource(this, R.drawable.ic_coffee_machine_100);
+                    break;
+                case CoffeeDataMessage.COFFEE_MESSAGE_TYPE_FILL_LEVEL:
+                    int fillLevel = coffeeDataMessage.getFillLevel();
+                    if (fillLevel >= 90) {
+                        coffeeIcon = Icon.createWithResource(this, R.drawable.ic_coffee_cup_100);
+                    } else if (fillLevel >= 55) {
+                        coffeeIcon = Icon.createWithResource(this, R.drawable.ic_coffee_cup_66);
+                    } else if (fillLevel >= 20) {
+                        coffeeIcon = Icon.createWithResource(this, R.drawable.ic_coffee_cup_33);
+                    } else {
+                        coffeeIcon = Icon.createWithResource(this, R.drawable.ic_coffee_cup_0);
+                    }
+                    break;
+
+            }
+        }
+        return coffeeIcon;
     }
 
     /*
