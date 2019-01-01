@@ -3,12 +3,14 @@ package com.test.moc.coffeecomplication;
 import android.app.Application;
 import android.app.PendingIntent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.messaging.FirebaseMessaging;
+import com.test.moc.coffeefirebasemessaging.Model.CoffeeDataMessage;
 import com.test.moc.coffeefirebasemessaging.firebaseMessagingService.CoffeeFirebaseMessagingService;
 
 public class CoffeeComplicationApp extends Application {

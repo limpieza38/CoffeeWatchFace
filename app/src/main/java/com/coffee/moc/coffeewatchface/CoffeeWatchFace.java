@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -340,23 +341,28 @@ public class CoffeeWatchFace extends CanvasWatchFaceService {
             invalidate();
         }
 
-        private int selectCoffeeToastMessage() {
-            int messageResId = R.string.tapMessageEmpty;
+        private String selectCoffeeToastMessage() {
+            Resources res = getResources();
+            String message =res.getString(R.string.tapMessageEmpty);
+            long seconds = (mCalendar.getTimeInMillis() - coffeeDataMessage.getCalendar().getTimeInMillis()) / 1000;
+            int hours = (int) (seconds / 3600);
+            int minutes = (int) (seconds- hours * 3600) /60;
+
             if (coffeeDataMessage != null) {
                 switch (coffeeDataMessage.getType()) {
                     case CoffeeDataMessage.COFFEE_MESSAGE_TYPE_FILL_LEVEL:
-                        messageResId = R.string.tapMessageFillLevel;
+                        message = String.format(res.getString(R.string.tapMessageFillLevel), coffeeDataMessage.getFillLevel(), hours);
                         break;
                     case CoffeeDataMessage.COFFEE_MESSAGE_TYPE_READY:
-                        messageResId = R.string.tapMessageReady;
+                        message = res.getString(R.string.tapMessageReady);
                         break;
                     case CoffeeDataMessage.COFFEE_MESSAGE_TYPE_BREWING:
-                        messageResId = R.string.tapMessageBrewing;
+                        message = res.getString(R.string.tapMessageBrewing);
                         break;
                 }
 
             }
-            return messageResId;
+            return message;
         }
 
         @Override

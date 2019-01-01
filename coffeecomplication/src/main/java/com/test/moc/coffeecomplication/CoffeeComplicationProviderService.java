@@ -57,7 +57,7 @@ public class CoffeeComplicationProviderService extends ComplicationProviderServi
 
         CoffeeDataMessage coffeeDataMessage = new CoffeeDataMessage(type, timestamp, fillLevel);
 
-        Icon icon = Icon.createWithResource(this , R.drawable.ic_coffee_cup_66);
+        Icon icon = Icon.createWithResource(this , R.drawable.ic_coffee_cup_0);
         ComplicationData complicationData =
                 new ComplicationData.Builder(ComplicationData.TYPE_ICON)
                         .setIcon(icon)
@@ -66,14 +66,6 @@ public class CoffeeComplicationProviderService extends ComplicationProviderServi
         if (coffeeDataMessage.getType() != CoffeeDataMessage.COFFEE_MESSAGE_TYPE_INVALID) {
             String typeText = String.format(Locale.getDefault(), "%d!", coffeeDataMessage.getType());
             switch (dataType) {
-               /* case ComplicationData.TYPE_SHORT_TEXT:
-
-                    complicationData =
-                            new ComplicationData.Builder(ComplicationData.TYPE_SHORT_TEXT)
-                                    .setShortText(ComplicationText.plainText(typeText))
-                                    .setTapAction(complicationPendingIntent)
-                                    .build();
-                    break; */
                 case ComplicationData.TYPE_ICON:
                     Icon coffeeIcon = this.createComplicationIcon(coffeeDataMessage);
                     complicationData =
