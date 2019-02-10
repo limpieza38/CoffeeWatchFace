@@ -9,7 +9,7 @@ app = admin.initializeApp({
 var messageFillLevel = {
     data: {
         type:"coffee_fill_level",
-        timestamp:"2019-01-01T08:21Z",
+        timestamp:"2019-02-10T16:58:41.214Z",
         fillLevel: "33"
     }
 }
@@ -17,20 +17,20 @@ var messageFillLevel = {
 var messageReady = {
     data: {
         type:"coffee_ready",
-        timestamp:"2019-02-10T12:21Z",
+        timestamp:"2019-02-10T16:58:41.214Z",
     }
 }
 
 var messageBrewing = {
     data: {
         type:"coffee_brewing",
-        timestamp:"2019-02-10T08:21Z"
+        timestamp:"2019-02-10T16:58:41.214Z"
     }
 }
 
 var messaging = admin.messaging(app);
 
-messaging.sendToTopic("coffee",messageReady)
+messaging.sendToTopic("coffee",messageFillLevel)
     .then((response) => {
         // Response is a message ID string.
         console.log('Successfully sent message:', response);

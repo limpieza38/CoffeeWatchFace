@@ -10,7 +10,7 @@ import java.util.TimeZone;
 
 public class CoffeeDataMessage {
     private static final String TAG = "CoffeeDataMessage";
-    private final static SimpleDateFormat ISO8601DATEFORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm'Z'");
+    private final static SimpleDateFormat ISO8601DATEFORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
     public static final int COFFEE_MESSAGE_TYPE_BREWING = 1;
     public static final int COFFEE_MESSAGE_TYPE_READY = 2;
     public static final int COFFEE_MESSAGE_TYPE_FILL_LEVEL = 3;
