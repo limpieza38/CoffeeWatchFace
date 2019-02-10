@@ -1,4 +1,4 @@
-package com.test.moc.coffeefirebasemessaging.firebaseMessagingService;
+package com.cf.moc.coffeefirebasemessaging.firebaseMessagingService;
 
 import android.content.Intent;
 import android.util.Log;

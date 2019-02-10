@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">CoffeeComplication</string>
+    <string name="tapMessageEmpty">No information available</string>
+    <string name="tapMessageBrewing">brewing \n %1$d h ago</string>
+    <string name="tapMessageReady">ready \n %1$d h ago</string>
+    <string name="tapMessageFillLevel">fill level is %1$d \%% \n %2$d h ago</string>
+    <string name="my_analog_name">Coffee Watch Face</string>
 </resources>

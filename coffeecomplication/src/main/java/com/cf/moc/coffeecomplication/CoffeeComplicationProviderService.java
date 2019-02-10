@@ -1,4 +1,4 @@
-package com.test.moc.coffeecomplication;
+package com.cf.moc.coffeecomplication;
 
 import android.annotation.SuppressLint;
 import android.app.PendingIntent;
@@ -10,22 +10,13 @@ import android.support.wearable.complications.ComplicationManager;
 import android.support.wearable.complications.ComplicationProviderService;
 import android.util.Log;
 
-import com.test.moc.coffeefirebasemessaging.Model.CoffeeDataMessage;
-import com.test.moc.coffeefirebasemessaging.firebaseMessagingService.CoffeeFirebaseMessagingService;
+import com.cf.moc.coffeefirebasemessaging.Model.CoffeeDataMessage;
+import com.cf.moc.coffeefirebasemessaging.firebaseMessagingService.CoffeeFirebaseMessagingService;
 
 import java.util.Locale;
 
 public class CoffeeComplicationProviderService extends ComplicationProviderService {
     private static final String TAG = "CoffeeComplicationProviderService";
-
-
-    @Override
-    public void onComplicationActivated(
-            int complicationId, int dataType, ComplicationManager complicationManager) {
-        //   super.onComplicationActivated(complicationId, dataType, complicationManager);
-        Log.d(TAG, "onComplicationActivated(): " + complicationId);
-    }
-
 
     /*
      * Called when the complication needs updated data from your provider. There are four scenarios
@@ -41,7 +32,6 @@ public class CoffeeComplicationProviderService extends ComplicationProviderServi
     @Override
     public void onComplicationUpdate(
             int complicationId, int dataType, ComplicationManager complicationManager) {
-
         // Create Tap Action so that the user can trigger an update by tapping the complication.
         ComponentName thisProvider = new ComponentName(this, getClass());
         // We pass the complication id, so we can only update the specific complication tapped.
@@ -53,7 +43,6 @@ public class CoffeeComplicationProviderService extends ComplicationProviderServi
         String type = preferences.getString(CoffeeMessageBroadcastReceiver.PREFERENCE_KEY + CoffeeFirebaseMessagingService.TYPE, null);
         String timestamp = preferences.getString(CoffeeMessageBroadcastReceiver.PREFERENCE_KEY + CoffeeFirebaseMessagingService.TIMESTAMP, null);
         String fillLevel = preferences.getString(CoffeeMessageBroadcastReceiver.PREFERENCE_KEY + CoffeeFirebaseMessagingService.FILLLEVEL, null);
-
 
         CoffeeDataMessage coffeeDataMessage = new CoffeeDataMessage(type, timestamp, fillLevel);
 
@@ -118,14 +107,5 @@ public class CoffeeComplicationProviderService extends ComplicationProviderServi
             }
         }
         return coffeeIcon;
-    }
-
-    /*
-     * Called when the complication has been deactivated.
-     */
-    @Override
-    public void onComplicationDeactivated(int complicationId) {
-        Log.d(TAG, "onComplicationDeactivated(): " + complicationId);
-        // FirebaseMessaging.getInstance().unsubscribeFromTopic("coffee");
     }
 }

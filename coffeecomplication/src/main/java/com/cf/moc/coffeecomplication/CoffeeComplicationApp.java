@@ -1,4 +1,4 @@
-package com.test.moc.coffeecomplication;
+package com.cf.moc.coffeecomplication;
 
 import android.app.Application;
 import android.app.PendingIntent;
@@ -10,13 +10,13 @@ import android.util.Log;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.messaging.FirebaseMessaging;
-import com.test.moc.coffeefirebasemessaging.Model.CoffeeDataMessage;
-import com.test.moc.coffeefirebasemessaging.firebaseMessagingService.CoffeeFirebaseMessagingService;
+import com.cf.moc.coffeefirebasemessaging.firebaseMessagingService.CoffeeFirebaseMessagingService;
 
 public class CoffeeComplicationApp extends Application {
     CoffeeMessageBroadcastReceiver coffeeMessageBroadcastReceiver = new CoffeeMessageBroadcastReceiver();
 
     private static final String TAG = "CoffeeComplicationApp";
+
     @Override
     public void onCreate() {
         super.onCreate();

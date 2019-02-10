@@ -1,4 +1,4 @@
-package com.test.moc.coffeecomplication;
+package com.cf.moc.coffeecomplication;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -7,7 +7,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 
-import com.test.moc.coffeefirebasemessaging.firebaseMessagingService.CoffeeFirebaseMessagingService;
+import com.cf.moc.coffeefirebasemessaging.firebaseMessagingService.CoffeeFirebaseMessagingService;
 
 public class CoffeeMessageBroadcastReceiver extends BroadcastReceiver {
     private static final String TAG = "CoffeeMessageBroadcastReceiver";

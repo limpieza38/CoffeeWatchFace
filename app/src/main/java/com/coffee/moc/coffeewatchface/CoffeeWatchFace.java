@@ -20,8 +20,8 @@ import android.support.wearable.watchface.WatchFaceStyle;
 import android.view.SurfaceHolder;
 import android.widget.Toast;
 
-import com.test.moc.coffeefirebasemessaging.Model.CoffeeDataMessage;
-import com.test.moc.coffeefirebasemessaging.firebaseMessagingService.CoffeeFirebaseMessagingService;
+import com.cf.moc.coffeefirebasemessaging.Model.CoffeeDataMessage;
+import com.cf.moc.coffeefirebasemessaging.firebaseMessagingService.CoffeeFirebaseMessagingService;
 
 import java.lang.ref.WeakReference;
 import java.util.Calendar;
@@ -334,8 +334,6 @@ public class CoffeeWatchFace extends CanvasWatchFaceService {
                     // The user has completed the tap gesture.
                     Toast.makeText(getApplicationContext(), selectCoffeeToastMessage(), Toast.LENGTH_LONG)
                             .show();
-                    coffeeDataMessage = null;
-                    changeDrawableCoffeeElements();
                     break;
             }
             invalidate();
@@ -344,20 +342,20 @@ public class CoffeeWatchFace extends CanvasWatchFaceService {
         private String selectCoffeeToastMessage() {
             Resources res = getResources();
             String message =res.getString(R.string.tapMessageEmpty);
-            long seconds = (mCalendar.getTimeInMillis() - coffeeDataMessage.getCalendar().getTimeInMillis()) / 1000;
-            int hours = (int) (seconds / 3600);
-            int minutes = (int) (seconds- hours * 3600) /60;
 
             if (coffeeDataMessage != null) {
+                long seconds = (mCalendar.getTimeInMillis() - coffeeDataMessage.getCalendar().getTimeInMillis()) / 1000;
+                int hours = (int) (seconds / 3600);
+                // int minutes = (int) (seconds- hours * 3600) /60;
                 switch (coffeeDataMessage.getType()) {
                     case CoffeeDataMessage.COFFEE_MESSAGE_TYPE_FILL_LEVEL:
                         message = String.format(res.getString(R.string.tapMessageFillLevel), coffeeDataMessage.getFillLevel(), hours);
                         break;
                     case CoffeeDataMessage.COFFEE_MESSAGE_TYPE_READY:
-                        message = res.getString(R.string.tapMessageReady);
+                        message = String.format(res.getString(R.string.tapMessageReady), hours);
                         break;
                     case CoffeeDataMessage.COFFEE_MESSAGE_TYPE_BREWING:
-                        message = res.getString(R.string.tapMessageBrewing);
+                        message = String.format(res.getString(R.string.tapMessageBrewing), hours);
                         break;
                 }
 

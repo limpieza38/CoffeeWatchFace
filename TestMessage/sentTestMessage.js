@@ -17,20 +17,20 @@ var messageFillLevel = {
 var messageReady = {
     data: {
         type:"coffee_ready",
-        timestamp:"2019-01-01T08:21Z",
+        timestamp:"2019-02-10T12:21Z",
     }
 }
 
 var messageBrewing = {
     data: {
         type:"coffee_brewing",
-        timestamp:"2019-01-01T08:21Z"
+        timestamp:"2019-02-10T08:21Z"
     }
 }
 
 var messaging = admin.messaging(app);
 
-messaging.sendToTopic("coffee",messageFillLevel)
+messaging.sendToTopic("coffee",messageReady)
     .then((response) => {
         // Response is a message ID string.
         console.log('Successfully sent message:', response);

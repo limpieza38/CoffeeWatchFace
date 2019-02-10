@@ -1,4 +1,4 @@
-package com.test.moc.coffeefirebasemessaging;
+package com.cf.moc.coffeefirebasemessaging;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;

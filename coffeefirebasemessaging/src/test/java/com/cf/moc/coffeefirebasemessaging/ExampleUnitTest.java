@@ -1,4 +1,4 @@
-package com.test.moc.coffeefirebasemessaging;
+package com.cf.moc.coffeefirebasemessaging;
 
 import org.junit.Test;
 
