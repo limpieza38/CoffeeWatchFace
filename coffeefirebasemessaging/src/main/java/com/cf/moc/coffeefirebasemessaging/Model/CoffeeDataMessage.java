@@ -52,6 +52,7 @@ public class CoffeeDataMessage {
     }
 
     public CoffeeDataMessage(String iType, String iTimestamp, String iFillLevel) {
+        ISO8601DATEFORMAT.setTimeZone(TimeZone.getTimeZone("UTC"));
         setType(iType);
         if (type != COFFEE_MESSAGE_TYPE_INVALID){
             if (iTimestamp != null) {

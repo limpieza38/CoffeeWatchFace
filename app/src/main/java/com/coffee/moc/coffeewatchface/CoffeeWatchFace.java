@@ -400,7 +400,7 @@ public class CoffeeWatchFace extends CanvasWatchFaceService {
             if (coffeeIconBitmap != null) {
                 int width = coffeeIconBitmap.getWidth();
                 int height = coffeeIconBitmap.getHeight();
-                canvas.drawBitmap(coffeeIconBitmap, mCenterX - (width / 2f), mCenterY / 2f - (height / 2f), mCoffeePaint);
+                canvas.drawBitmap(coffeeIconBitmap, mCenterX - (width / 2f), mCenterY+10, mCoffeePaint);
                 if(coffeeTimeRotation > 0f){
                     canvas.save();
                     float iconX = (float) Math.sin(coffeeTimeRotation) * innerTickRadius-coffeeTimeBitmap.getWidth()/2f;
