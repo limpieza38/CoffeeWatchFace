@@ -23,7 +23,7 @@ public class CoffeeComplicationApp extends Application {
         IntentFilter coffeeFilter = new IntentFilter(CoffeeFirebaseMessagingService.NOTIFICATION);
         registerReceiver(coffeeMessageBroadcastReceiver, coffeeFilter);
 
-        FirebaseMessaging.getInstance().subscribeToTopic("coffee")
+        FirebaseMessaging.getInstance().subscribeToTopic("coffeeAndroid")
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
@@ -41,6 +41,6 @@ public class CoffeeComplicationApp extends Application {
         super.onTerminate();
         unregisterReceiver(coffeeMessageBroadcastReceiver);
 
-        FirebaseMessaging.getInstance().unsubscribeFromTopic("coffee");
+        FirebaseMessaging.getInstance().unsubscribeFromTopic("coffeeAndroid");
     }
 }

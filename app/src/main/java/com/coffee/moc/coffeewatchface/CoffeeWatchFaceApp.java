@@ -14,7 +14,7 @@ public class CoffeeWatchFaceApp extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        FirebaseMessaging.getInstance().subscribeToTopic("coffee")
+        FirebaseMessaging.getInstance().subscribeToTopic("coffeeAndroid")
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
