@@ -99,6 +99,7 @@ public class CoffeeWatchFace extends CanvasWatchFaceService {
             }
         };
         private CoffeeDataMessage coffeeDataMessage;
+
         private final BroadcastReceiver coffeeMessagesReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
@@ -157,7 +158,7 @@ public class CoffeeWatchFace extends CanvasWatchFaceService {
                         coffeeIconBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.coffee_machine_0);
                         break;
                     case CoffeeDataMessage.COFFEE_MESSAGE_TYPE_READY:
-                        coffeeIconBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.coffee_cup_100);
+                        coffeeIconBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.coffee_machine_100);
                         break;
                     case CoffeeDataMessage.COFFEE_MESSAGE_TYPE_FILL_LEVEL:
                         int fillLevel = coffeeDataMessage.getFillLevel();
